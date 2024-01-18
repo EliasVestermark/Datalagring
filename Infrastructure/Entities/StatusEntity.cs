@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatalagringUppgift.Entities;
+namespace Infrastructure.Entities;
 
 public class StatusEntity
 {
@@ -8,6 +9,8 @@ public class StatusEntity
     public int Id { get; set; }
 
     [Required]
-    [StringLength(20)]
+    [Column(TypeName = "nvarchar(20)")]
     public string StatusText { get; set; } = null!;
+
+    public virtual ICollection<BookingEntity> Bookings { get; set; } = new HashSet<BookingEntity>();
 }

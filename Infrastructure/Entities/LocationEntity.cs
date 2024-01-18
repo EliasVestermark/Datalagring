@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatalagringUppgift.Entities;
+namespace Infrastructure.Entities;
 
 public class LocationEntity
 {
@@ -8,14 +9,16 @@ public class LocationEntity
     public int Id { get; set; }
 
     [Required]
-    [StringLength(50)]
+    [Column(TypeName = "nvarchar(50)")]
     public string Address { get; set; } = null!;
 
     [Required]
-    [StringLength(6)]
+    [Column(TypeName = "char(6)")]
     public string PostalCode { get; set; } = null!;
 
     [Required]
-    [StringLength(50)]
+    [Column(TypeName = "nvarchar(50)")]
     public string City { get; set; } = null!;
+
+    public virtual ICollection<BookingEntity> Bookings { get; set; } = new HashSet<BookingEntity>();
 }

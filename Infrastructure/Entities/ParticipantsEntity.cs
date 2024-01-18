@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DatalagringUppgift.Entities;
+namespace Infrastructure.Entities;
 
 public class ParticipantsEntity
 {
@@ -8,6 +9,8 @@ public class ParticipantsEntity
     public int Id { get; set; }
 
     [Required]
-    [StringLength(20)]
+    [Column(TypeName = "varchar(7)")]
     public string Amount { get; set; } = null!;
+
+    public virtual ICollection<BookingEntity> Bookings { get; set; } = new HashSet<BookingEntity>();
 }

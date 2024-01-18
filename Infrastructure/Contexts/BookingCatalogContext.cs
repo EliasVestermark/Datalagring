@@ -1,18 +1,10 @@
-﻿using DatalagringUppgift.Entities;
+﻿using Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace DatalagringUppgift.Contexts;
+namespace Infrastructure.Contexts;
 
-public class BookingCatalogContext : DbContext
+public partial class BookingCatalogContext(DbContextOptions<BookingCatalogContext> options) : DbContext(options)
 {
-    public BookingCatalogContext()
-    {
-    }
-
-    public BookingCatalogContext(DbContextOptions<BookingCatalogContext> options) : base(options)
-    {
-    }
-
     public virtual DbSet<TimeEntity> Times { get; set; }
     public virtual DbSet<StatusEntity> Statuses { get; set; }
     public virtual DbSet<ParticipantsEntity> Participants { get; set; }
@@ -22,6 +14,16 @@ public class BookingCatalogContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<ClientEntity>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
+
+        modelBuilder.Entity<StatusEntity>()
+            .HasIndex(x => x.StatusText)
+            .IsUnique();
+
+        modelBuilder.Entity<ParticipantsEntity>()
+            .HasIndex(x => x.Amount)
+            .IsUnique();
     }
 }
