@@ -2,14 +2,16 @@
 using Infrastructure.Entities;
 using Infrastructure.Dtos;
 using System.Diagnostics;
+using Infrastructure.Interfaces;
+using Infrastructure.Enums;
 
 namespace Infrastructure.Services;
 
-public class BookingService
+public class BookingService : IBookingService
 {
-    private readonly ClientRepository _clientRepository;
-    private readonly LocationRepository _locationRepository;
-    private readonly BookingRepository _bookingRepository;
+    private readonly IClientRepository _clientRepository;
+    private readonly ILocationRepository _locationRepository;
+    private readonly IBookingRepository _bookingRepository;
 
     public BookingService(ClientRepository clientRepository, LocationRepository locationRepository, BookingRepository bookingRepository)
     {
@@ -18,7 +20,7 @@ public class BookingService
         _bookingRepository = bookingRepository;
     }
 
-    public bool CreateBooking(CreateBookingDto booking)
+    public ServiceStatus CreateBooking(ICreateBookingDto booking)
     {
         try
         {
@@ -50,18 +52,22 @@ public class BookingService
 
                 if (result != null)
                 {
-                    return true;
+                    return ServiceStatus.SUCCESS;
                 }
+            }
+            else
+            {
+                return ServiceStatus.ALREADY_EXISTS;
             }
         }
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
 
-        return false;
+        return ServiceStatus.FAILED;
     }
 
-    public IEnumerable<BookingDto> GetAllBookings()
+    public IEnumerable<IBookingDto> GetAllBookings()
     {
-        var bookings = new List<BookingDto>();
+        var bookings = new List<IBookingDto>();
 
         try
         {
@@ -89,5 +95,125 @@ public class BookingService
         catch (Exception ex) { Debug.WriteLine(ex.Message); }
 
         return bookings;
+    }
+
+    public ServiceStatus UpdateClient(ClientEntity client, string newEmail, string oldEmail)
+    {
+        try
+        {
+            if (!_clientRepository.Exists(x => x.Email == newEmail))
+            {
+                var clientEntity = _clientRepository.GetOne(x => x.Email == oldEmail);
+
+                clientEntity = _clientRepository.Update(clientEntity.Id, new ClientEntity
+                {
+                    Id = clientEntity.Id,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    Email = client.Email,
+                    PhoneNumber = client.PhoneNumber
+                });
+
+                return ServiceStatus.UPDATED;
+            }
+            else
+            {
+                return ServiceStatus.ALREADY_EXISTS;
+            }
+
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+
+        return ServiceStatus.FAILED;
+    }
+
+    public ServiceStatus UpdateLocation(LocationEntity location, string newAddress, string newPostalCode, string oldAddress, string oldPostalCode)
+    {
+        try
+        {
+            if (!_locationRepository.Exists(x => x.PostalCode == newPostalCode && x.Address == newAddress))
+            {
+                var locationEntity = _locationRepository.GetOne(x => x.PostalCode == oldPostalCode && x.Address == oldAddress);
+
+                locationEntity = _locationRepository.Update(locationEntity.Id, new LocationEntity
+                {
+                    Id = locationEntity.Id,
+                    Address = location.Address,
+                    PostalCode = location.PostalCode,
+                    City = location.City
+                });
+
+                return ServiceStatus.UPDATED;
+            }
+            else
+            {
+                return ServiceStatus.ALREADY_EXISTS;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+
+        return ServiceStatus.FAILED;
+    }
+
+    public ServiceStatus UpdateBooking(string newDate, string oldDate, string email, string address, string postalCode, int statusId, int participantsId, int timeId)
+    {
+        try
+        {
+            if (!_bookingRepository.Exists(x => x.Date == newDate))
+            {
+                var clientEntity = _clientRepository.GetOne(x => x.Email == email);
+
+                var locationEntity = _locationRepository.GetOne(x => x.PostalCode == postalCode && x.Address == address);
+
+                var bookingEntity = _bookingRepository.GetOne(x => x.Date == oldDate);
+
+                bookingEntity = _bookingRepository.Update(bookingEntity.Id, new BookingEntity
+                {
+                    Id = bookingEntity.Id,
+                    Date = newDate,
+                    StatusId = statusId,
+                    ClientId = clientEntity.Id,
+                    ParticipantsId = participantsId,
+                    TimeId = timeId,
+                    LocationId = locationEntity.Id
+                });
+
+                return ServiceStatus.UPDATED;
+            }
+            else
+            {
+                return ServiceStatus.ALREADY_EXISTS;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+
+        return ServiceStatus.FAILED;
+    }
+
+    public ServiceStatus DeleteBooking(string date)
+    {
+        try
+        {
+            if (_bookingRepository.Exists(x => x.Date == date))
+            {
+                var result = _bookingRepository.Delete(x => x.Date == date);
+
+                if (result)
+                {
+                    return ServiceStatus.DELETED;
+                }
+                else
+                {
+                    return ServiceStatus.FAILED;
+                }
+            }
+            else
+            {
+                return ServiceStatus.NOT_FOUND;
+            }
+        }
+        catch (Exception ex) { Debug.WriteLine(ex.Message); }
+
+        return ServiceStatus.FAILED;
     }
 }

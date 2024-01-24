@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Dtos;
+﻿using Infrastructure.Interfaces;
 
-public class BookingDto
+namespace Infrastructure.Dtos;
+
+public class BookingDto : IBookingDto
 {
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;

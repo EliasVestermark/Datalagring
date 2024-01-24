@@ -1,14 +1,16 @@
 ﻿using Infrastructure.Contexts;
+using Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Infrastructure.Repositories;
 
-public abstract class BaseRepository<TEntity> where TEntity : class
+public abstract class BaseRepository<TEntity, TContext> : IBaseRepository<TEntity> where TEntity : class where TContext : DbContext
 {
-    private readonly BookingCatalogContext _context;
+    private readonly TContext _context;
 
-    protected BaseRepository(BookingCatalogContext context)
+    protected BaseRepository(TContext context)
     {
         _context = context;
     }
@@ -29,7 +31,7 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     {
         try
         {
-            var result = _context.Set<TEntity>().ToList();
+            var result = _context.Set<TEntity>();
             if (result != null)
             {
                 return result;
@@ -43,7 +45,7 @@ public abstract class BaseRepository<TEntity> where TEntity : class
     {
         try
         {
-            var result =  _context.Set<TEntity>().FirstOrDefault(predicate);
+            var result = _context.Set<TEntity>().FirstOrDefault(predicate);
             if (result != null)
             {
                 return result;
@@ -53,15 +55,14 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         return null!;
     }
 
-    public virtual TEntity Update(TEntity entity)
+    public virtual TEntity Update(int id, TEntity entity)
     {
         try
         {
-            var entityToUpdate = _context.Set<TEntity>().Find(entity);
+            var entityToUpdate = _context.Set<TEntity>().Find(id);
             if (entityToUpdate != null)
             {
-                entityToUpdate = entity;
-                _context.Set<TEntity>().Update(entityToUpdate);
+                _context.Entry(entityToUpdate).CurrentValues.SetValues(entity);
                 _context.SaveChanges();
 
                 return entityToUpdate;

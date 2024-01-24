@@ -7,7 +7,7 @@
 CREATE TABlE Ingridients
 (
 	IngridientId int not null identity primary key,
-	Name nvarchar(50)
+	Name nvarchar(50) UNIQUE
 )
 GO
 

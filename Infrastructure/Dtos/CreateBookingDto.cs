@@ -1,6 +1,8 @@
-﻿namespace Infrastructure.Dtos;
+﻿using Infrastructure.Interfaces;
 
-public class CreateBookingDto(string firstName, string lastName, string phoneNumber, string email, string address, string postalCode, string city, string date, int statusId, int participantId, int timeId)
+namespace Infrastructure.Dtos;
+
+public class CreateBookingDto(string firstName, string lastName, string phoneNumber, string email, string address, string postalCode, string city, string date, int statusId, int participantId, int timeId) : ICreateBookingDto
 {
     public string FirstName { get; set; } = firstName;
     public string LastName { get; set; } = lastName;
