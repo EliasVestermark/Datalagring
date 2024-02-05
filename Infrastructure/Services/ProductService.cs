@@ -22,11 +22,11 @@ public class ProductService : IProductService
         _context = context;
     }
 
-    public ServiceStatus CreateProduct(ICreateProductDto product)
+    public async Task<ServiceStatus> CreateProduct(ICreateProductDto product)
     {
         try
         {
-            if (!_productRepository.Exists(x => x.Name == product.Name))
+            if (!await _productRepository.Exists(x => x.Name == product.Name))
             {
                 var ingridientsFromDb = new List<Ingridient>();
 
@@ -44,7 +44,7 @@ public class ProductService : IProductService
                     Ingridients = ingridientsFromDb
                 };
 
-                var result = _productRepository.Create(productEntity);
+                var result = await _productRepository.Create(productEntity);
 
                 if (result != null)
                 {
@@ -61,13 +61,13 @@ public class ProductService : IProductService
         return ServiceStatus.FAILED;
     }
 
-    public IEnumerable<IProductDto> GetAllProducts()
+    public async Task<IEnumerable<IProductDto>> GetAllProducts()
     {
         var products = new List<IProductDto>();
 
         try
         {
-            var result = _productRepository.GetAll();
+            var result = await _productRepository.GetAll();
 
             foreach (var item in result)
             {
@@ -86,23 +86,15 @@ public class ProductService : IProductService
         return products;
     }
 
-    public ServiceStatus UpdateProduct(string oldName, string newName, decimal newPrice, ICollection<Ingridient> newIngridients, int newCategoryId)
+    public async Task<ServiceStatus> UpdateProduct(string oldName, string newName, decimal newPrice, ICollection<Ingridient> newIngridients, int newCategoryId)
     {
         try
         {
-            if (!_productRepository.Exists(x => x.Name == newName))
+            if (!await _productRepository.Exists(x => x.Name == newName))
             {
-                var ingridientsFromDb = new List<Ingridient>();
+                var productEntity = await _productRepository.GetOne(x => x.Name == oldName);
 
-                foreach (var ingridient in newIngridients)
-                {
-                    var existingIngridient = _context.Set<Ingridient>().FirstOrDefault(i => i.Name == ingridient.Name);
-                    ingridientsFromDb.Add(existingIngridient!);
-                }
-
-                var productEntity = _productRepository.GetOne(x => x.Name == oldName);
-
-                productEntity = _productRepository.Update(productEntity.ProductId, new Product
+                productEntity = await _productRepository.Update(productEntity.ProductId, new Product
                 {
                     ProductId = productEntity.ProductId,
                     Name = newName,
@@ -123,13 +115,13 @@ public class ProductService : IProductService
         return ServiceStatus.FAILED;
     }
 
-    public ServiceStatus DeleteProduct(string name)
+    public async Task<ServiceStatus> DeleteProduct(string name)
     {
         try
         {
-            if (_productRepository.Exists(x => x.Name == name))
+            if (await _productRepository.Exists(x => x.Name == name))
             {
-                var result = _productRepository.Delete(x => x.Name == name);
+                var result = await _productRepository.Delete(x => x.Name == name);
 
                 if (result)
                 {
@@ -150,13 +142,13 @@ public class ProductService : IProductService
         return ServiceStatus.FAILED;
     }
 
-    public IEnumerable<Ingridient> GetAllIngridients()
+    public async Task<IEnumerable<Ingridient>> GetAllIngridients()
     {
         var ingridients = new List<Ingridient>();
 
         try
         {
-            var result = _ingridientRepository.GetAll();
+            var result = await _ingridientRepository.GetAll();
 
             foreach (var item in result)
             {

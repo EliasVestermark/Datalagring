@@ -4,7 +4,6 @@ using Infrastructure.Enums;
 using Infrastructure.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using PresentationDatalagringUppgift.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PresentationDatalagringUppgift.Services;
 
@@ -21,7 +20,7 @@ public class MenuService : IMenuService
         _validationService = validationService;
     }
 
-    public void ShowMainMenu()
+    public async Task ShowMainMenu()
     {
         while (true)
         {
@@ -38,19 +37,19 @@ public class MenuService : IMenuService
             switch (option)
             {
                 case "1":
-                    ShowAddProductMenu();
+                    await ShowAddProductMenu();
                     break;
 
                 case "2":
-                    ShowAllProductsMenu();
+                    await ShowAllProductsMenu();
                     break;
 
                 case "3":
-                    ShowAddBookingMenu();
+                    await ShowAddBookingMenu();
                     break;
 
                 case "4":
-                    ShowAllBookingsMenu();
+                    await ShowAllBookingsMenu();
                     break;
 
                 case "x":
@@ -66,7 +65,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowAddProductMenu()
+    private async Task ShowAddProductMenu()
     {
         DisplayTitle("ADD PRODUCT");
 
@@ -76,7 +75,7 @@ public class MenuService : IMenuService
         Console.Write("Price: ");
         decimal price = _validationService.StringToNumber(Console.ReadLine()!);
 
-        var resultList = _productService.GetAllIngridients();
+        var resultList = await _productService.GetAllIngridients();
         int index = 1;
         ICollection<Ingridient> ingridients = [];
 
@@ -150,7 +149,7 @@ public class MenuService : IMenuService
             }
         }
 
-        var result = _productService.CreateProduct(new CreateProductDto(name, price, ingridients, categoryId));
+        var result = await _productService.CreateProduct(new CreateProductDto(name, price, ingridients, categoryId));
 
         DisplayTitle("ADD PRODUCT");
 
@@ -175,7 +174,7 @@ public class MenuService : IMenuService
         Console.ReadKey();
     }
 
-    private void ShowAllProductsMenu()
+    private async Task ShowAllProductsMenu()
     {
         bool run = true;
 
@@ -183,7 +182,7 @@ public class MenuService : IMenuService
         {
             DisplayTitle("SHOW ALL PRODUCTS");
 
-            var productList = _productService.GetAllProducts();
+            var productList = await _productService.GetAllProducts();
             Console.Clear();
 
             if (productList.Count() == 0)
@@ -218,7 +217,7 @@ public class MenuService : IMenuService
                 }
                 else if (int.TryParse(option, out int optionInt) && optionInt <= index - 1 && optionInt >= 1)
                 {
-                    ShowProductInformationMenu(optionInt);
+                    await ShowProductInformationMenu(optionInt);
                 }
                 else
                 {
@@ -229,7 +228,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowProductInformationMenu(int option)
+    private async Task ShowProductInformationMenu(int option)
     {
         DisplayTitle("PRODUCT INFORMATION");
 
@@ -237,7 +236,7 @@ public class MenuService : IMenuService
 
         while (run)
         {
-            var productList = _productService.GetAllProducts();
+            var productList = await _productService.GetAllProducts();
             var product = productList.ElementAt(option - 1);
 
             DisplayTitle("PRODUCT OPTIONS");
@@ -258,12 +257,12 @@ public class MenuService : IMenuService
             switch (menuOption)
             {
                 case "r":
-                    ShowRemoveProductMenu($"{product.Name}");
+                    await ShowRemoveProductMenu($"{product.Name}");
                     run = false;
                     break;
 
                 case "u":
-                    ShowUpdateProductMenu(product);
+                    await ShowUpdateProductMenu(product);
                     break;
 
                 case "x":
@@ -278,7 +277,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowRemoveProductMenu(string name)
+    private async Task ShowRemoveProductMenu(string name)
     {
         DisplayTitle("REMOVE PRODUCT");
         Console.WriteLine($"Are you sure you want to remove this product from the contact list? Press (y) to confirm or any other key to go back");
@@ -287,7 +286,7 @@ public class MenuService : IMenuService
 
         if (option!.Equals("y", StringComparison.CurrentCultureIgnoreCase))
         {
-            var result = _productService.DeleteProduct(name);
+            var result = await _productService.DeleteProduct(name);
             Console.Clear();
             DisplayTitle("REMOVE PRODUCT");
 
@@ -314,7 +313,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowUpdateProductMenu(IProductDto product)
+    private async Task ShowUpdateProductMenu(IProductDto product)
     {
         DisplayTitle("UPDATE PRODUCT INFORMATION");
 
@@ -324,7 +323,7 @@ public class MenuService : IMenuService
         Console.Write("Price: ");
         decimal newPrice = _validationService.StringToNumber(Console.ReadLine()!);
 
-        var resultList = _productService.GetAllIngridients();
+        var resultList = await _productService.GetAllIngridients();
         int index = 1;
         ICollection<Ingridient> newIngridients = [];
 
@@ -398,7 +397,7 @@ public class MenuService : IMenuService
             }
         }
 
-        var result = _productService.UpdateProduct(product.Name, newName, newPrice, newIngridients, newCategoryId);
+        var result = await _productService.UpdateProduct(product.Name, newName, newPrice, newIngridients, newCategoryId);
 
         switch (result)
         {
@@ -422,7 +421,7 @@ public class MenuService : IMenuService
         }
     }    
 
-    private void ShowAddBookingMenu()
+    private async Task ShowAddBookingMenu()
     {
         DisplayTitle("ADD BOOKING");
 
@@ -521,7 +520,7 @@ public class MenuService : IMenuService
         //1 corresponds to status "booked" in the database
         int statusId = 1;
 
-        var result = _bookingService.CreateBooking(new CreateBookingDto(firstName, lastName, phoneNumber, email, address, postalCode, city, date, statusId, participantsId, timeId));
+        var result = await _bookingService.CreateBooking(new CreateBookingDto(firstName, lastName, phoneNumber, email, address, postalCode, city, date, statusId, participantsId, timeId));
 
         Console.Clear();
 
@@ -545,7 +544,7 @@ public class MenuService : IMenuService
         Console.ReadKey();
     }
 
-    private void ShowAllBookingsMenu()
+    private async Task ShowAllBookingsMenu()
     {
         bool run = true;
 
@@ -553,7 +552,7 @@ public class MenuService : IMenuService
         {
             DisplayTitle("SHOW ALL BOOKINGS");
 
-            var bookingList = _bookingService.GetAllBookings();
+            var bookingList = await _bookingService.GetAllBookings();
             Console.Clear();
 
             if (bookingList == null)
@@ -584,7 +583,7 @@ public class MenuService : IMenuService
                 }
                 else if (int.TryParse(option, out int optionInt) && optionInt <= index - 1 && optionInt >= 1)
                 {
-                    ShowBookingInformationMenu(optionInt);
+                    await ShowBookingInformationMenu(optionInt);
                 }
                 else
                 {
@@ -595,7 +594,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowBookingInformationMenu(int option)
+    private async Task ShowBookingInformationMenu(int option)
     {
         DisplayTitle("BOOKING INFORMATION");
 
@@ -603,7 +602,7 @@ public class MenuService : IMenuService
 
         while (run)
         {
-            var bookingList = _bookingService.GetAllBookings();
+            var bookingList = await _bookingService.GetAllBookings();
             var booking = bookingList.ElementAt(option - 1);
 
             DisplayTitle("BOOKING OPTIONS");
@@ -630,20 +629,20 @@ public class MenuService : IMenuService
             switch (menuOption)
             {
                 case "r":
-                    ShowRemoveBookingMenu($"{booking.FirstName} {booking.LastName}", booking.Date);
+                    await ShowRemoveBookingMenu($"{booking.FirstName} {booking.LastName}", booking.Date);
                     run = false;
                     break;
 
                 case "1":
-                    ShowUpdateClientMenu(booking);
+                    await ShowUpdateClientMenu(booking);
                     break;
 
                 case "2":
-                    ShowUpdateLocationMenu(booking);
+                    await ShowUpdateLocationMenu(booking);
                     break;
 
                 case "3":
-                    ShowUpdateBookingMenu(booking);
+                    await ShowUpdateBookingMenu(booking);
                     break;
 
                 case "x":
@@ -658,7 +657,7 @@ public class MenuService : IMenuService
         }
     }
 
-    private void ShowRemoveBookingMenu(string name, string date)
+    private async Task ShowRemoveBookingMenu(string name, string date)
     {
         DisplayTitle("REMOVE CONTACT");
         Console.WriteLine($"Are you sure you want to remove this booking from the contact list? Press (y) to confirm or any other key to go back");
@@ -667,7 +666,7 @@ public class MenuService : IMenuService
 
         if (option!.Equals("y", StringComparison.CurrentCultureIgnoreCase))
         {
-            var result = _bookingService.DeleteBooking(date);
+            var result = await _bookingService.DeleteBooking(date);
             Console.Clear();
             DisplayTitle("REMOVE CONTACT");
 
@@ -694,7 +693,7 @@ public class MenuService : IMenuService
         }
     }
 
-    public void ShowUpdateClientMenu(IBookingDto booking)
+    public async Task ShowUpdateClientMenu(IBookingDto booking)
     {
         DisplayTitle("UPDATE CLIENT INFORMATION");
 
@@ -710,7 +709,7 @@ public class MenuService : IMenuService
         Console.Write("Email: ");
         string newEmail = _validationService.EmptyStringInputValidation(Console.ReadLine()!);
 
-        var result = _bookingService.UpdateClient(new ClientEntity
+        var result = await _bookingService.UpdateClient(new ClientEntity
         {
             FirstName = newFirstName,
             LastName = newLastName,
@@ -740,7 +739,7 @@ public class MenuService : IMenuService
         }
     }
 
-    public void ShowUpdateLocationMenu(IBookingDto booking)
+    public async Task ShowUpdateLocationMenu(IBookingDto booking)
     {
         DisplayTitle("UPDATE CLIENT INFORMATION");
 
@@ -753,7 +752,7 @@ public class MenuService : IMenuService
         Console.Write("City: ");
         string newCity = _validationService.EmptyStringInputValidation(Console.ReadLine()!);
 
-        var result = _bookingService.UpdateLocation(new LocationEntity
+        var result = await _bookingService.UpdateLocation(new LocationEntity
         {
             Address = newAddress,
             PostalCode = newPostalCode,
@@ -782,7 +781,7 @@ public class MenuService : IMenuService
         }
     }
 
-    public void ShowUpdateBookingMenu(IBookingDto booking)
+    public async Task ShowUpdateBookingMenu(IBookingDto booking)
     {
         DisplayTitle("UPDATE BOOKING INFORMATION");
 
@@ -888,7 +887,7 @@ public class MenuService : IMenuService
             }
         }
 
-        var result = _bookingService.UpdateBooking(newDate, booking.Date, booking.Email, booking.Address, booking.PostalCode, newStatusID, newParticipantsId, newTimeId);
+        var result = await _bookingService.UpdateBooking(newDate, booking.Date, booking.Email, booking.Address, booking.PostalCode, newStatusID, newParticipantsId, newTimeId);
 
         switch (result)
         {

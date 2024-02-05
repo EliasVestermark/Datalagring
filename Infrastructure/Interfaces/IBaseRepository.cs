@@ -4,11 +4,11 @@ namespace Infrastructure.Interfaces
 {
     public interface IBaseRepository<TEntity> where TEntity : class
     {
-        TEntity Create(TEntity entity);
-        bool Delete(Expression<Func<TEntity, bool>> predicate);
-        bool Exists(Expression<Func<TEntity, bool>> predicate);
-        IEnumerable<TEntity> GetAll();
-        TEntity GetOne(Expression<Func<TEntity, bool>> predicate);
-        TEntity Update(int id, TEntity entity);
+        Task<TEntity> Create(TEntity entity);
+        Task<bool> Delete(Expression<Func<TEntity, bool>> predicate);
+        Task<bool> Exists(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> GetAll();
+        Task<TEntity> GetOne(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> Update(int id, TEntity entity);
     }
 }

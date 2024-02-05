@@ -2,7 +2,6 @@
 using Infrastructure.Entities;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using static Dapper.SqlMapper;
 using System.Diagnostics;
 
 namespace Infrastructure.Repositories;
@@ -16,11 +15,11 @@ public class BookingRepository : BaseRepository<BookingEntity, BookingCatalogCon
         _context = context;
     }
 
-    public override IEnumerable<BookingEntity> GetAll()
+    public override async Task<IEnumerable<BookingEntity>> GetAll()
     {
         try
         {
-            var result = _context.Set<BookingEntity>().Include("Client").Include("Location").Include("Status").Include("Participants").Include("Time").ToList();
+            var result = await _context.Boookings.Include(i => i.Client).Include(i => i.Location).Include(i => i.Status).Include(i => i.Participants).Include(i => i.Time).ToListAsync();
             if (result != null)
             {
                 return result;

@@ -2,6 +2,6 @@
 {
     public interface IMenuService
     {
-        void ShowMainMenu();
+        Task ShowMainMenu();
     }
 }

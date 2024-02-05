@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PresentationDatalagringUppgift", "DatalagringUppgift\PresentationDatalagringUppgift.csproj", "{DA7196A2-EF66-43F2-87E5-EF63E6733E57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PresentationDatalagringUppgift", "DatalagringUppgift\PresentationDatalagringUppgift.csproj", "{DA7196A2-EF66-43F2-87E5-EF63E6733E57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AB31F429-B0A5-4312-BBD0-CBC33A915B8F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{AB31F429-B0A5-4312-BBD0-CBC33A915B8F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructures.Tests", "Infrastructures.Tests\Infrastructures.Tests.csproj", "{3F491825-0D9A-4E29-A322-78F7CD377E2C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{AB31F429-B0A5-4312-BBD0-CBC33A915B8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB31F429-B0A5-4312-BBD0-CBC33A915B8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB31F429-B0A5-4312-BBD0-CBC33A915B8F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F491825-0D9A-4E29-A322-78F7CD377E2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F491825-0D9A-4E29-A322-78F7CD377E2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F491825-0D9A-4E29-A322-78F7CD377E2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F491825-0D9A-4E29-A322-78F7CD377E2C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

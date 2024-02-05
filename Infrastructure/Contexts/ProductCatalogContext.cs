@@ -11,8 +11,7 @@ public partial class ProductCatalogContext : DbContext
     {
     }
 
-    public ProductCatalogContext(DbContextOptions<ProductCatalogContext> options)
-        : base(options)
+    public ProductCatalogContext(DbContextOptions<ProductCatalogContext> options) : base(options)
     {
     }
 

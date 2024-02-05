@@ -20,22 +20,22 @@ public class BookingService : IBookingService
         _bookingRepository = bookingRepository;
     }
 
-    public ServiceStatus CreateBooking(ICreateBookingDto booking)
+    public async Task<ServiceStatus> CreateBooking(ICreateBookingDto booking)
     {
         try
         {
-            if (!_bookingRepository.Exists(x => x.Date == booking.Date))
+            if (!await _bookingRepository.Exists(x => x.Date == booking.Date))
             {
-                var clientEntity = _clientRepository.GetOne(x => x.Email == booking.Email);
+                var clientEntity = await _clientRepository.GetOne(x => x.Email == booking.Email);
                 if (clientEntity == null)
                 {
-                    clientEntity = _clientRepository.Create(new ClientEntity { FirstName = booking.FirstName, LastName = booking.LastName, Email = booking.Email, PhoneNumber = booking.PhoneNumber });
+                    clientEntity = await _clientRepository.Create(new ClientEntity { FirstName = booking.FirstName, LastName = booking.LastName, Email = booking.Email, PhoneNumber = booking.PhoneNumber });
                 }
 
-                var locationEntity = _locationRepository.GetOne(x => x.PostalCode == booking.PostalCode && x.Address == booking.Address);
+                var locationEntity = await _locationRepository.GetOne(x => x.PostalCode == booking.PostalCode && x.Address == booking.Address);
                 if (locationEntity == null)
                 {
-                    locationEntity = _locationRepository.Create(new LocationEntity { Address = booking.Address, PostalCode = booking.PostalCode, City = booking.City });
+                    locationEntity = await _locationRepository.Create(new LocationEntity { Address = booking.Address, PostalCode = booking.PostalCode, City = booking.City });
                 }
 
                 var bookingEntity = new BookingEntity
@@ -48,7 +48,7 @@ public class BookingService : IBookingService
                     LocationId = locationEntity.Id
                 };
 
-                var result = _bookingRepository.Create(bookingEntity);
+                var result = await _bookingRepository.Create(bookingEntity);
 
                 if (result != null)
                 {
@@ -65,13 +65,13 @@ public class BookingService : IBookingService
         return ServiceStatus.FAILED;
     }
 
-    public IEnumerable<IBookingDto> GetAllBookings()
+    public async Task<IEnumerable<IBookingDto>> GetAllBookings()
     {
         var bookings = new List<IBookingDto>();
 
         try
         {
-            var result = _bookingRepository.GetAll();
+            var result = await _bookingRepository.GetAll();
 
             foreach (var item in result)
             {
@@ -97,15 +97,15 @@ public class BookingService : IBookingService
         return bookings;
     }
 
-    public ServiceStatus UpdateClient(ClientEntity client, string newEmail, string oldEmail)
+    public async Task<ServiceStatus> UpdateClient(ClientEntity client, string newEmail, string oldEmail)
     {
         try
         {
-            if (!_clientRepository.Exists(x => x.Email == newEmail))
+            if (!await _clientRepository.Exists(x => x.Email == newEmail))
             {
-                var clientEntity = _clientRepository.GetOne(x => x.Email == oldEmail);
+                var clientEntity = await _clientRepository.GetOne(x => x.Email == oldEmail);
 
-                clientEntity = _clientRepository.Update(clientEntity.Id, new ClientEntity
+                clientEntity = await _clientRepository.Update(clientEntity.Id, new ClientEntity
                 {
                     Id = clientEntity.Id,
                     FirstName = client.FirstName,
@@ -127,15 +127,15 @@ public class BookingService : IBookingService
         return ServiceStatus.FAILED;
     }
 
-    public ServiceStatus UpdateLocation(LocationEntity location, string newAddress, string newPostalCode, string oldAddress, string oldPostalCode)
+    public async Task<ServiceStatus> UpdateLocation(LocationEntity location, string newAddress, string newPostalCode, string oldAddress, string oldPostalCode)
     {
         try
         {
-            if (!_locationRepository.Exists(x => x.PostalCode == newPostalCode && x.Address == newAddress))
+            if (!await _locationRepository.Exists(x => x.PostalCode == newPostalCode && x.Address == newAddress))
             {
-                var locationEntity = _locationRepository.GetOne(x => x.PostalCode == oldPostalCode && x.Address == oldAddress);
+                var locationEntity = await _locationRepository.GetOne(x => x.PostalCode == oldPostalCode && x.Address == oldAddress);
 
-                locationEntity = _locationRepository.Update(locationEntity.Id, new LocationEntity
+                locationEntity = await _locationRepository.Update(locationEntity.Id, new LocationEntity
                 {
                     Id = locationEntity.Id,
                     Address = location.Address,
@@ -155,19 +155,19 @@ public class BookingService : IBookingService
         return ServiceStatus.FAILED;
     }
 
-    public ServiceStatus UpdateBooking(string newDate, string oldDate, string email, string address, string postalCode, int statusId, int participantsId, int timeId)
+    public async Task<ServiceStatus> UpdateBooking(string newDate, string oldDate, string email, string address, string postalCode, int statusId, int participantsId, int timeId)
     {
         try
         {
-            if (!_bookingRepository.Exists(x => x.Date == newDate))
+            if (!await _bookingRepository.Exists(x => x.Date == newDate))
             {
-                var clientEntity = _clientRepository.GetOne(x => x.Email == email);
+                var clientEntity = await _clientRepository.GetOne(x => x.Email == email);
 
-                var locationEntity = _locationRepository.GetOne(x => x.PostalCode == postalCode && x.Address == address);
+                var locationEntity = await _locationRepository.GetOne(x => x.PostalCode == postalCode && x.Address == address);
 
-                var bookingEntity = _bookingRepository.GetOne(x => x.Date == oldDate);
+                var bookingEntity = await _bookingRepository.GetOne(x => x.Date == oldDate);
 
-                bookingEntity = _bookingRepository.Update(bookingEntity.Id, new BookingEntity
+                bookingEntity = await _bookingRepository.Update(bookingEntity.Id, new BookingEntity
                 {
                     Id = bookingEntity.Id,
                     Date = newDate,
@@ -190,13 +190,13 @@ public class BookingService : IBookingService
         return ServiceStatus.FAILED;
     }
 
-    public ServiceStatus DeleteBooking(string date)
+    public async Task<ServiceStatus> DeleteBooking(string date)
     {
         try
         {
-            if (_bookingRepository.Exists(x => x.Date == date))
+            if (await _bookingRepository.Exists(x => x.Date == date))
             {
-                var result = _bookingRepository.Delete(x => x.Date == date);
+                var result = await _bookingRepository.Delete(x => x.Date == date);
 
                 if (result)
                 {
